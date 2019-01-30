@@ -1,12 +1,19 @@
 port module Main exposing (Model, Msg(..), add1, init, main, toJs, update, view)
 
+--import Html.Attributes exposing (..)
+--import Html.Events exposing (..)
+
 import Browser
 import Browser.Navigation as Nav
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Color exposing (Color)
+import Element exposing (Element, alignRight, centerY, el, fill, padding, rgb255, rgba255, row, spacing, text, width, html)
+import Element.Background as Background
+import Element.Border as Border
+import Element.Font as Font
+import Html
 import Http exposing (Error(..))
 import Json.Decode as Decode
+import Material.Icons.Action exposing (account_balance)
 
 
 
@@ -110,13 +117,14 @@ add1 model =
 -- ---------------------------
 
 
-view : Model -> Html Msg
+view : Model -> Html.Html Msg
 view model =
+    {--
     div [ class "container" ]
         [ header []
             [ -- img [ src "/images/logo.png" ] []
               span [ class "logo" ] []
-            , h1 [] [ text "Elm 0.19 Webpack Starter, with hot-reloading" ]
+            , h1 [] [ text " Raison D'être Elm 0.19 Webpack Starter, with hot-reloading" ]
             ]
         , p [] [ text "Click on the button below to increment the state." ]
         , div [ class "pure-g" ]
@@ -143,7 +151,42 @@ view model =
             [ text "And now don't forget to add a star to the Github repo "
             , a [ href "https://github.com/simonh1000/elm-webpack-starter" ] [ text "elm-webpack-starter" ]
             ]
+        , p []
+            [ account_balance Color.orange 48 ]
+        , p []
+            [ Element.layout [] myElement ]
         ]
+--}
+    Element.layout [ Background.color (uiColor Color.lightGrey) ]
+        myRowOfStuff
+
+-- Standard (red, orange,yellow,green,blue,purple,brown)
+-- Light (lightRed,lightOrange,lightYellow,lightGreen,lightBlue,lightPurple,lightBrown)
+-- Dark (darkRed,darkOrange,darkYellow,darkGreen,darkBlue,darkPurple,darkBrown)
+-- Eight Shades of Grey (white,lightGrey,grey,darkGrey,lightCharcoal,charcoal,darkCharcoal,black)
+uiColor : Color -> Element.Color
+uiColor color =
+  color |> Color.toRgba |> Element.fromRgb
+
+myRowOfStuff : Element msg
+myRowOfStuff =
+    row [ width fill, centerY, spacing 30 ]
+        [ myElement
+        , myElement
+        , el [] (html (account_balance Color.orange 48))
+        , el [ alignRight ] myElement
+        ]
+
+
+myElement : Element msg
+myElement =
+    el
+        [ Background.color (uiColor Color.purple)
+        , Font.color (uiColor Color.white)
+        , Border.rounded 3
+        , padding 30
+        ]
+        (text "stylish!")
 
 
 
@@ -159,7 +202,7 @@ main =
         , update = update
         , view =
             \m ->
-                { title = "Elm 0.19 starter"
+                { title = "Elm 0.19 starter Raison D'être"
                 , body = [ view m ]
                 }
         , subscriptions = \_ -> Sub.none
