@@ -38,12 +38,31 @@ port toJs : String -> Cmd msg
 type alias Model =
     { counter : Int
     , serverMessage : String
+    , screen :
+        { width : Int
+        , height : Int
+        }
     }
 
 
-init : Int -> ( Model, Cmd Msg )
+type alias Flags =
+    { counter : Int
+    , width : Int
+    , height : Int
+    }
+
+
+init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( { counter = flags, serverMessage = "" }, Cmd.none )
+    ( { counter = flags.counter
+      , serverMessage = ""
+      , screen =
+            { width = flags.width
+            , height = flags.height
+            }
+      }
+    , Cmd.none
+    )
 
 
 
@@ -252,7 +271,7 @@ myTable =
 -- ---------------------------
 
 
-main : Program Int Model Msg
+main : Program Flags Model Msg
 main =
     Browser.document
         { init = init
