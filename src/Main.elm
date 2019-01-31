@@ -5,15 +5,19 @@ port module Main exposing (Model, Msg(..), add1, init, main, toJs, update, view)
 
 import Browser
 import Browser.Navigation as Nav
-import Color exposing (Color)
-import Element exposing (Element, alignRight, centerY, el, fill, padding, rgb255, rgba255, row, spacing, text, width, html)
+import Color as C exposing (black, blue, brown, charcoal, darkBlue, darkBrown, darkCharcoal, darkGray, darkGreen, darkGrey, darkOrange, darkPurple, darkRed, darkYellow, gray, green, grey, lightBlue, lightBrown, lightCharcoal, lightGray, lightGreen, lightGrey, lightOrange, lightPurple, lightRed, lightYellow, orange, purple, red, white, yellow)
+import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
+import Element.Input as Input
+import Element.Region as Region
 import Html
 import Http exposing (Error(..))
 import Json.Decode as Decode
 import Material.Icons.Action exposing (account_balance)
+import Material.Icons.Content exposing (add_circle, archive, content_copy, redo, remove_circle, unarchive, undo)
+import Material.Icons.Navigation exposing (menu)
 
 
 
@@ -119,74 +123,127 @@ add1 model =
 
 view : Model -> Html.Html Msg
 view model =
-    {--
-    div [ class "container" ]
-        [ header []
-            [ -- img [ src "/images/logo.png" ] []
-              span [ class "logo" ] []
-            , h1 [] [ text " Raison D'être Elm 0.19 Webpack Starter, with hot-reloading" ]
-            ]
-        , p [] [ text "Click on the button below to increment the state." ]
-        , div [ class "pure-g" ]
-            [ div [ class "pure-u-1-3" ]
-                [ button
-                    [ class "pure-button pure-button-primary"
-                    , onClick Inc
-                    ]
-                    [ text "+ 1" ]
-                , text <| String.fromInt model.counter
-                ]
-            , div [ class "pure-u-1-3" ] []
-            , div [ class "pure-u-1-3" ]
-                [ button
-                    [ class "pure-button pure-button-primary"
-                    , onClick TestServer
-                    ]
-                    [ text "ping dev server" ]
-                , text model.serverMessage
+    Element.layout [ Font.size 20, Background.color (uiColor lightGray) ]
+        (Element.column [ explain Debug.todo ]
+            [ heading model
+            , myColumnOfStuff
+            , Element.row []
+                [ incrementButton
+                , Element.text <| String.fromInt model.counter
                 ]
             ]
-        , p [] [ text "Then make a change to the source code and see how the state is retained after you recompile." ]
-        , p []
-            [ text "And now don't forget to add a star to the Github repo "
-            , a [ href "https://github.com/simonh1000/elm-webpack-starter" ] [ text "elm-webpack-starter" ]
-            ]
-        , p []
-            [ account_balance Color.orange 48 ]
-        , p []
-            [ Element.layout [] myElement ]
-        ]
---}
-    Element.layout [ Background.color (uiColor Color.lightGrey) ]
-        myRowOfStuff
+        )
 
--- Standard (red, orange,yellow,green,blue,purple,brown)
--- Light (lightRed,lightOrange,lightYellow,lightGreen,lightBlue,lightPurple,lightBrown)
--- Dark (darkRed,darkOrange,darkYellow,darkGreen,darkBlue,darkPurple,darkBrown)
--- Eight Shades of Grey (white,lightGrey,grey,darkGrey,lightCharcoal,charcoal,darkCharcoal,black)
-uiColor : Color -> Element.Color
+
+uiColor : C.Color -> Element.Color
 uiColor color =
-  color |> Color.toRgba |> Element.fromRgb
+    color |> C.toRgba |> Element.fromRgb
 
-myRowOfStuff : Element msg
+
+heading : Model -> Element msg
+heading model =
+    Element.row [ Region.heading 1 ]
+        [ el [] (html (menu red 36))
+        , el
+            [ alignLeft
+            , Font.size 24
+            ]
+            (Element.text "Raison D'être Elm 0.19 Webpack Starter, with hot-reloading")
+        ]
+
+
+footer : Model -> Element msg
+footer model =
+    Element.row [] []
+
+
+
+-- left sidebar
+-- content box
+-- navigation tabs
+-- cards
+-- breadcrumbs
+
+
+sidebar : Element Msg
+sidebar =
+    Element.column [ width (px 70), height shrink, centerY, centerX, spacing 36, padding 10 ]
+        [ incrementButton
+        ]
+
+
+incrementButton : Element Msg
+incrementButton =
+    Input.button []
+        { onPress = Just Inc
+        , label = Element.text "+1"
+        }
+
+
+myColumnOfStuff : Element Msg
+myColumnOfStuff =
+    Element.column [ width shrink, height shrink, centerY, centerX, spacing 36, padding 10, explain Debug.todo ]
+        [ myRowOfStuff
+        ]
+
+
+myRowOfStuff : Element Msg
 myRowOfStuff =
-    row [ width fill, centerY, spacing 30 ]
+    Element.row [ width fill, centerY, padding 10, spacing 30, clip ]
         [ myElement
-        , myElement
-        , el [] (html (account_balance Color.orange 48))
+        , myTable
+        , image [ width (px 70) ] { description = "logo", src = "/images/logo.png" }
+        , el [] (html (account_balance orange 48))
         , el [ alignRight ] myElement
         ]
 
 
-myElement : Element msg
+myElement : Element Msg
 myElement =
     el
-        [ Background.color (uiColor Color.purple)
-        , Font.color (uiColor Color.white)
+        [ Background.color (uiColor purple)
+        , Font.color (uiColor white)
         , Border.rounded 3
         , padding 30
         ]
         (text "stylish!")
+
+
+type alias Person =
+    { firstName : String
+    , lastName : String
+    }
+
+
+persons : List Person
+persons =
+    [ { firstName = "David"
+      , lastName = "Bowie"
+      }
+    , { firstName = "Florence"
+      , lastName = "Welch"
+      }
+    ]
+
+
+myTable =
+    Element.table []
+        { data = persons
+        , columns =
+            [ { header = Element.text "First Name"
+              , width = fill
+              , view =
+                    \person ->
+                        Element.text person.firstName
+              }
+            , { header = Element.text "Last Name"
+              , width = fill
+              , view =
+                    \person ->
+                        Element.text person.lastName
+              }
+            ]
+        }
 
 
 
