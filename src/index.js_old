@@ -3,14 +3,14 @@
 require("./styles.scss");
 
 const {Elm} = require('./Main');
-var flags = {
-    counter: 6,
-    screen: {
-      width: window.innerWidth,
-      height: window.innerHeight
+var app = Elm.Main.init(
+    {
+        counter: 6/*,
+        width:  window.innerWidth,
+        height: window.innerHeight 
+        */
     }
-};
-var app = Elm.Main.init(flags);
+);
 
 app.ports.toJs.subscribe(data => {
     console.log(data);
