@@ -4,6 +4,7 @@ port module Main exposing (Model, Msg(..), add1, init, main, toJs, update, view)
 --import Html.Events exposing (..)
 
 import Browser
+import Browser.Events exposing (onResize)
 import Browser.Navigation as Nav
 import Color as C exposing (black, blue, brown, charcoal, darkBlue, darkBrown, darkCharcoal, darkGray, darkGreen, darkGrey, darkOrange, darkPurple, darkRed, darkYellow, gray, green, grey, lightBlue, lightBrown, lightCharcoal, lightGray, lightGreen, lightGrey, lightOrange, lightPurple, lightRed, lightYellow, orange, purple, red, white, yellow)
 import Element exposing (..)
@@ -76,6 +77,7 @@ type Msg
     | Set Int
     | TestServer
     | OnServerResponse (Result Http.Error String)
+    | Resize Int Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -103,6 +105,9 @@ update message model =
 
                 Err err ->
                     ( { model | serverMessage = "Error: " ++ httpErrorToString err }, Cmd.none )
+
+        Resize w h ->
+            ( { model | screen = { width = w, height = h } }, Cmd.none )
 
 
 httpErrorToString : Http.Error -> String
@@ -142,7 +147,12 @@ add1 model =
 
 view : Model -> Html.Html Msg
 view model =
-    Element.layout [ Font.size 20, Background.color (uiColor lightGray) ]
+    Element.layout
+        [ width (px model.screen.width)
+        , height (px model.screen.height)
+        , Font.size 20
+        , Background.color (uiColor lightGray)
+        ]
         (Element.column [ explain Debug.todo ]
             [ heading model
             , myColumnOfStuff
@@ -263,6 +273,17 @@ myTable =
               }
             ]
         }
+
+
+
+-- ---------------------------
+-- SUBSCRIPTIONS
+-- ----------------------------
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    onResize Resize
 
 
 
